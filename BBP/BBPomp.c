@@ -11,25 +11,15 @@ int thread_num = 1;
 /* compute 16^exp (mod dem) */
 uint32_t modulo_omp(uint32_t exp, uint32_t dem)
 {
-    uint32_t gp;
-    /* find greatest pow of 2 <= exp */
-    if (dem == 1)
+    if(dem == 1)
         return 0;
-    for (gp = 0; exp >> gp; gp++)
-        ;
-    uint32_t pow2 = 1 << (gp - 1), r = 1;
 
-    for (uint32_t j = 0; j < gp; j++) {
-        if (exp >= pow2) {
-            r <<= 4;
-            r %= dem;
-            exp -= pow2;
-        }
-        pow2 >>= 1;
-        if (pow2) {
-            r *= r;
-            r %= dem;
-        }
+    uint32_t r = 1, base = 16 % dem;
+    while(exp > 0){
+        if(exp & 1)
+            r = (r * base) % dem;
+        exp >>= 1;
+        base = (base * base) % dem;
     }
     return r;
 }
